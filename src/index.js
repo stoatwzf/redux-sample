@@ -1,64 +1,48 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import * as reducers from './reducers';
-import logger from 'redux-logger';
+import { createStore } from 'redux';
+import { Provider, connect } from 'react-redux';
 
-const reducer = combineReducers(reducers);
-const store = createStore(
-  reducer,
-  applyMiddleware(logger)
-);
-
-class App extends Component {
-	state = {
-		value: 0
-	}
-
-	componentDidMount (){
-		this.unSubscribe = store.subscribe(() => {
-			this.setState({
-				value: (+store.getState().foo) + (+store.getState().bar) + (+store.getState().baz)
-			})
-		});
-	}
-
-	componentWillUnmonunt (){
-		this.unSubscribe();
-	}
-
-	changeHandler = event => {
-		const {name, value} = event.target;
-
-		store.dispatch({
-			type: `TODO_${name}`,
-			payload: {
-				[name]: value
-			}
-		})
-	}
-
+const decorators = cl => {
+	return connect(mapStateToProps, mapDispatchToProps)(cl)
+}
+// component
+@decorators
+class Counter extends Component {
 	render (){
+		const { value, onIncreaseClick } = this.props;
+
 		return (
 			<div>
-				<label>foo: </label>
-				<input name="foo" value={this.state.foo} onChange={this.changeHandler} />
-				<br />
-				<label>bar: </label>
-				<input name="bar" value={this.state.bar} onChange={this.changeHandler} />
-				<br />
-				<label>baz: </label>
-				<input name="baz" value={this.state.baz} onChange={this.changeHandler} />
-				<br />
-				<label>Total: </label>
-				<input value={this.state.value} />
-				<br />
+				<span>{value}</span>
+				<button onClick={onIncreaseClick}>Increase</button>
 			</div>
 		);
 	}
 }
 
+/*redux store*/
+const reducer = (state = { count: 0}, action) => {
+	const count = state.count;
+
+	switch (action.type){
+		case 'increase':
+			return { count: count + 1 };
+			break;
+		default:
+			return state;
+	}
+}
+const store = createStore(reducer);
+
+/*connect component*/
+const increaseAction = { type: 'increase' }
+const mapDispatchToProps = dispatch => ({ onIncreaseClick: () => dispatch(increaseAction)});
+const mapStateToProps = state => ({ value: state.count });
+
 ReactDOM.render(
-	<App />,
+	<Provider store={store}>
+		<Counter />
+	</Provider>,
 	document.querySelector('#root')
 );
