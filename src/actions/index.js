@@ -24,8 +24,8 @@ export const addTodo= text => {
   return { type: ADD_TODO, text }
 }
 
-export const toggleTodo = index => {
-  return { type: TOGGLE_TODO, index }
+export const toggleTodo = id => {
+  return { type: TOGGLE_TODO, id }
 }
 
 export const setVisibilityFilter = filter => {

@@ -16,7 +16,11 @@ const config = {
 					loader: 'babel-loader',
 					options: {
 						presets: ['env', 'react'],
-						plugins: ['transform-class-properties', 'transform-decorators-legacy']
+						plugins: [
+							'transform-class-properties',
+							'transform-decorators-legacy',
+							'transform-object-rest-spread'
+						]
 					}
 				}
 			},
