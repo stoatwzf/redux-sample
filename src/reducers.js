@@ -1,38 +1,43 @@
-export const foo = (state, action) => {
-
-	if (state !== undefined){
-		if (action.type === 'TODO_foo'){
-			return action.payload.foo;
-		} else {
-			return state
-		}
-	} else {
-		return 0
-	}
-	
+import {
+  ADD_TODO,
+  TOGGLE_TODO,
+  SET_VISIBILITY_FILTER,
+  VisibilityFilters
+} from './actions';
+const { SHOW_ALL } = VisibilityFilters;
+const visibilityFilter = (state = SHOW_ALL, action) => {
+  switch (action.type) {
+    case SET_VISIBILITY_FILTER:
+      return action.filter
+    default:
+      return state
+  }
+}
+const todos = (state = [], action) => {
+  switch (action.type) {
+    case ADD_TODO:
+      return [
+        ...state,
+        {
+          text: action.text,
+          completed: false
+        }
+      ]
+    case TOGGLE_TODO:
+      return state.map((todo, index) => {
+        if (index === action.index) {
+          return Object.assign({}, todo, {
+            completed: !todo.completed
+          })
+        }
+        return todo
+      })
+    default:
+      return state
+  }
 }
 
-
-export const bar = (state, action) => {
-	if (state !== undefined){
-		if (action.type === 'TODO_bar'){
-			return action.payload.bar;
-		} else {
-			return state
-		}
-	} else {
-		return 0
-	}
-}
-
-export const baz = (state, action) => {
-	if (state !== undefined){
-		if (action.type === 'TODO_baz'){
-			return action.payload.baz;
-		} else {
-			return state
-		}
-	} else {
-		return 0
-	}
+export {
+	visibilityFilter,
+	todos
 }

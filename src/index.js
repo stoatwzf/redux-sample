@@ -1,48 +1,22 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
-import { Provider, connect } from 'react-redux';
+import { createStore, combineReducers } from 'redux';
+import * as reducers from './reducers';
+import {
+  VisibilityFilters,
+  addTodo,
+  toggleTodo,
+  setVisibilityFilter,
+} from './actions';
 
-const decorators = cl => {
-	return connect(mapStateToProps, mapDispatchToProps)(cl)
-}
-// component
-@decorators
-class Counter extends Component {
-	render (){
-		const { value, onIncreaseClick } = this.props;
+const todoApp = combineReducers(reducers);
+const store = createStore(todoApp);
 
-		return (
-			<div>
-				<span>{value}</span>
-				<button onClick={onIncreaseClick}>Increase</button>
-			</div>
-		);
-	}
-}
+store.subscribe(() => {
+	console.log(store.getState());
+});
 
-/*redux store*/
-const reducer = (state = { count: 0}, action) => {
-	const count = state.count;
-
-	switch (action.type){
-		case 'increase':
-			return { count: count + 1 };
-			break;
-		default:
-			return state;
-	}
-}
-const store = createStore(reducer);
-
-/*connect component*/
-const increaseAction = { type: 'increase' }
-const mapDispatchToProps = dispatch => ({ onIncreaseClick: () => dispatch(increaseAction)});
-const mapStateToProps = state => ({ value: state.count });
-
-ReactDOM.render(
-	<Provider store={store}>
-		<Counter />
-	</Provider>,
-	document.querySelector('#root')
-);
+store.dispatch(addTodo('Learn about actions'))
+store.dispatch(addTodo('Learn about reducers'))
+store.dispatch(addTodo('Learn about store'))
+store.dispatch(toggleTodo(0))
+store.dispatch(toggleTodo(1))
+store.dispatch(setVisibilityFilter(VisibilityFilters.SHOW_COMPLETED))
